@@ -17,7 +17,7 @@ const journeySteps = [
   },
   {
     icon: Users,
-    title: 'Became Videography Head',
+    title: 'Became Jt.Videography Head',
     description: 'Took on leadership role at CSIPCE, managing event videography and coordinating teams.',
     color: 'primary',
   },
