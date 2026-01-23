@@ -27,7 +27,7 @@ const projects = [
       { icon: Server, text: 'Zero upload - no server file handling' },
       { icon: FileText, text: 'Auto-cleanup when tab closes' },
     ],
-    link: 'https://mypdfutil.vercel.app',
+    link: 'https://mypdfutils.vercel.app',
     image: pdfutilsPreview,
   },
   {
