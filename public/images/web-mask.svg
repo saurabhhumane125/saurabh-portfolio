@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1086 1448" fill="none">
+  <defs>
+    <linearGradient id="red" x1="220" y1="380" x2="860" y2="660" gradientUnits="userSpaceOnUse"><stop stop-color="#8d1024"/><stop offset=".35" stop-color="#ed3544"/><stop offset=".64" stop-color="#cc2037"/><stop offset="1" stop-color="#6a1022"/></linearGradient>
+    <radialGradient id="light" cx="0" cy="0" r="1" gradientTransform="translate(435 345) rotate(72) scale(660 450)" gradientUnits="userSpaceOnUse"><stop stop-color="#ff9b85" stop-opacity=".24"/><stop offset="1" stop-opacity="0"/></radialGradient>
+    <pattern id="weave" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M0 0h3v3H0zM3 3h3v3H3z" fill="#05060b" opacity=".15"/></pattern>
+    <clipPath id="head"><path d="M540 58C326 40 166 190 164 401L184 493C165 524 174 607 197 636L231 744C263 849 361 944 482 982L589 989C690 971 776 896 810 798L854 633C882 602 882 534 858 490L870 391C877 189 747 66 540 58Z"/></clipPath>
+    <linearGradient id="lens" x1="300" y1="500" x2="700" y2="690" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#c1d0df"/></linearGradient>
+  </defs>
+  <g clip-path="url(#head)">
+    <path fill="url(#red)" d="M140 40h760v980H140z"/>
+    <path fill="url(#light)" d="M140 40h760v980H140z"/>
+    <g stroke="#261322" stroke-width="5" opacity=".82">
+      <path d="M541 566L535 45M541 566L332 55M541 566L165 174M541 566L133 398M541 566L158 646M541 566L234 861M541 566L421 1007M541 566L643 1024M541 566L822 860M541 566L910 650M541 566L908 398M541 566L847 177M541 566L733 55"/>
+      <path d="M504 473Q537 485 576 474Q597 502 619 525Q607 554 614 580Q590 594 585 620Q554 616 538 636Q518 615 492 619Q486 593 465 579Q475 551 466 528Q493 511 504 473Z"/>
+      <path d="M468 382Q528 407 611 385Q653 441 693 481Q674 535 685 592Q636 627 626 685Q574 675 539 713Q496 677 450 686Q438 634 397 598Q417 545 399 494Q450 451 468 382Z"/>
+      <path d="M430 290Q522 321 648 289Q705 371 774 442Q747 521 764 605Q694 656 670 754Q592 742 538 797Q475 749 404 754Q382 672 320 618Q343 535 320 459Q399 393 430 290Z"/>
+      <path d="M391 196Q515 234 683 194Q767 308 850 401Q824 513 844 619Q753 690 716 832Q607 813 539 887Q453 825 356 832Q326 717 244 640Q268 527 241 426Q351 333 391 196Z"/>
+      <path d="M354 102Q510 147 720 100Q823 236 926 361Q898 503 921 631Q810 724 762 909Q626 884 538 981Q431 905 306 909Q269 759 166 665Q190 520 158 389Q303 270 354 102Z"/>
+    </g>
+    <path d="M266 474Q357 511 490 565Q455 674 384 683Q300 678 266 474Z" fill="#0c111b" stroke="#0a0c13" stroke-width="18" stroke-linejoin="round"/>
+    <path d="M810 474Q718 511 585 565Q621 674 692 683Q775 678 810 474Z" fill="#0c111b" stroke="#0a0c13" stroke-width="18" stroke-linejoin="round"/>
+    <path d="M291 510Q378 545 466 579Q437 653 386 656Q325 652 291 510Z" fill="url(#lens)"/>
+    <path d="M785 510Q699 545 609 579Q639 653 690 656Q752 652 785 510Z" fill="url(#lens)"/>
+    <path fill="url(#weave)" d="M140 40h760v980H140z"/>
+    <path d="M851 350Q865 210 746 110" stroke="#ff6570" stroke-width="9" opacity=".6"/>
+  </g>
+</svg>
