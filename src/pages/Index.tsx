@@ -1,37 +1,54 @@
-import Navbar from '@/components/Navbar';
-import Hero from '@/components/Hero';
-import TechStackSection from '@/components/TechStackSection';
-import ProjectsSection from '@/components/ProjectsSection';
-import VisualsSection from '@/components/VisualsSection';
-import JourneySection from '@/components/JourneySection';
-import ExperienceSection from '@/components/ExperienceSection';
-import ContactSection from '@/components/ContactSection';
-import CursorGlow from '@/components/CursorGlow';
-import NeuralNetwork3D from '@/components/NeuralNetwork3D';
+import { useRef, useState, type FormEvent, type PointerEvent } from 'react';
+import { ArrowDown, ArrowUpRight, Download, Github, Linkedin, Menu, X, Fingerprint, Code2, Film, Mail } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import shot1 from '@/assets/visuals/cinematic_shot_1.jpg';
+import shot2 from '@/assets/visuals/cinematic_shot_2.jpg';
+import shot3 from '@/assets/visuals/cinematic_shot_3.jpg';
+import './portfolio.css';
 
-const Index = () => {
-  return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* Global 3D Neural Network Background */}
-      <div className="fixed inset-0 z-0">
-        <NeuralNetwork3D />
-      </div>
-      
-      <CursorGlow />
-      <Navbar />
-      
-      {/* Main content with relative positioning to appear above background */}
-      <div className="relative z-10">
-        <Hero />
-        <TechStackSection />
-        <ProjectsSection />
-        <VisualsSection />
-        <ExperienceSection />
-        <JourneySection />
-        <ContactSection />
-      </div>
-    </div>
-  );
-};
+const projects = [
+  { name: 'Trove', category: 'PRODUCT ENGINEERING', date: 'JUNE 2026', tagline: 'A secure home for the documents that matter.', detail: 'A family document vault with biometric authentication, encrypted offline caching, expiry tracking, and secure upload and retrieval APIs.', stack: ['Flutter', 'Dart', 'Fastify', 'PostgreSQL', 'Cloudflare R2'] },
+  { name: 'Tradox', category: 'MACHINE LEARNING', date: 'MAY 2026 · ONGOING', tagline: 'Turning market signals into model predictions.', detail: 'A modular stock prediction pipeline combining feature engineering, ensemble inference, market indicators, and sentiment signals, with model versioning and ONNX deployment.', stack: ['Python', 'FastAPI', 'PyTorch', 'LightGBM', 'ONNX'] },
+];
+const skills = [ ['Languages & web', 'Python · C · HTML5 / CSS3 · React.js · Next.js'], ['Data & databases', 'MySQL · MongoDB · PostgreSQL · Firebase Firestore'], ['Tools · foundational', 'Git · Docker · Jenkins · VS Code · IntelliJ IDEA · Cursor'] ];
+const nav = ['Work', 'About', 'Frames', 'Contact'];
+const gallery = [ { image: shot1, url: 'https://www.instagram.com/reel/DTDRvNajJt9/' }, { image: shot2, url: 'https://www.instagram.com/reel/DTDWV0QjO-z/' }, { image: shot3, url: 'https://www.instagram.com/reel/DTDSinsDJ5I/' } ];
+const Tags = ({ items }: { items: string[] }) => <div className="stack-tags">{items.map(item => <span key={item}>{item}</span>)}</div>;
 
-export default Index;
+export default function Index() {
+  const [menu, setMenu] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+  const [tab, setTab] = useState('engineering');
+  const [status, setStatus] = useState('idle');
+  const portrait = useRef<HTMLDivElement>(null);
+  function revealAt(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== 'mouse' || !portrait.current) return;
+    const rect = portrait.current.getBoundingClientRect();
+    portrait.current.style.setProperty('--x', `${event.clientX - rect.left}px`);
+    portrait.current.style.setProperty('--y', `${event.clientY - rect.top}px`);
+  }
+  async function send(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const values = new FormData(form);
+    const body = Object.fromEntries(['name', 'email', 'message'].map(key => [key, String(values.get(key) || '').trim()]));
+    if (Object.values(body).some(value => !value)) { setStatus('invalid'); return; }
+    setStatus('sending');
+    try {
+      const { error } = await supabase.functions.invoke('send-contact-email', { body });
+      if (error) throw error;
+      setStatus('success'); form.reset();
+    } catch { setStatus('error'); }
+  }
+  return <div className="portfolio-shell">
+    <a className="skip-link" href="#main">Skip to content</a>
+    <header className="site-header"><a href="#home" className="wordmark" aria-label="Saurabh Humane home">sh<i /></a><nav id="main-navigation" className={`main-nav ${menu ? 'is-open' : ''}`} aria-label="Main navigation">{nav.map(label => <a key={label} href={`#${label.toLowerCase()}`} onClick={() => setMenu(false)}>{label}</a>)}</nav><a className="header-resume" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Resume <ArrowUpRight size={15} /></a><button className="menu-toggle" aria-label={menu ? 'Close navigation' : 'Open navigation'} aria-expanded={menu} aria-controls="main-navigation" onClick={() => setMenu(!menu)}>{menu ? <X /> : <Menu />}</button></header>
+    <main id="main"><section className="hero-section" id="home"><div className="hero-topline"><span><i /> COMPUTER ENGINEER & CREATIVE</span><span>MUMBAI, INDIA ↗</span></div><div className="hero-layout"><div className="hero-copy"><p className="eyebrow">A LITTLE LOGIC. A LITTLE SUPERPOWER.</p><h1>Behind the<br />mask, a<br /><em>builder.</em></h1><p className="hero-description">I’m Saurabh Humane. I build useful software, explore intelligent systems, and tell stories through a lens.</p><div className="hero-actions"><a className="primary-link" href="#work">Explore my work <ArrowDown size={16} /></a><a className="text-link" href="/resume.pdf" target="_blank" rel="noopener noreferrer">My resume <Download size={16} /></a></div></div><div className={`portrait-stage ${revealed ? 'is-revealed' : ''}`} ref={portrait} onPointerMove={revealAt}><div className="portrait-grid" aria-hidden="true" /><span className="portrait-coordinate">SH / ALTER EGO 001</span><img className="portrait-base" src="/images/hero-portrait.png" alt="Pixel-art portrait of Saurabh Humane" fetchPriority="high" /><img className="portrait-reveal" src="/images/hero-portrait.png" alt="" aria-hidden="true" /><div className="portrait-caption"><span>SAURABH<br /><strong>HUMANE</strong></span><span>+</span></div><button className="reveal-button" aria-pressed={revealed} onClick={() => setRevealed(!revealed)}><Fingerprint size={19} />{revealed ? 'Mask identity' : 'Reveal identity'}<span>↗</span></button><p className="desktop-hint">MOVE YOUR CURSOR. MEET THE HUMAN.</p></div></div><div className="hero-bottom"><span>ENGINEERING THE USEFUL. FRAMING THE BEAUTIFUL.</span><a href="#work">SCROLL TO DISCOVER <ArrowDown size={14} /></a></div></section>
+    <div className="discipline-strip"><span>SOFTWARE ENGINEERING</span><i>✳</i><span>MACHINE LEARNING</span><i>✳</i><span>VISUAL STORYTELLING</span></div>
+    <section className="content-section" id="work"><div className="section-heading"><div><p className="eyebrow">01 / SELECTED WORK</p><h2>Ideas, made <em>real.</em></h2></div><p>From secure everyday tools<br />to experiments in intelligence.</p></div>{projects.map((project, index) => <article className={`project-row project-${index}`} key={project.name}><div className="project-visual"><div className="mock-topbar"><strong>{project.name.toLowerCase()} ↗</strong><span>CONCEPT PREVIEW</span></div>{index === 0 ? <div className="vault-demo"><Fingerprint size={55} strokeWidth={1} /><h3>Your family.<br />Your documents.<br /><span>Your peace of mind.</span></h3><div className="document-preview">▤ &nbsp; Family documents <span>✓</span></div><p>SECURE BY DESIGN <span>●</span></p></div> : <div className="market-demo"><p>SIGNAL → INTELLIGENCE</p><h3>Finding patterns.<br /><span>Building predictions.</span></h3><svg viewBox="0 0 400 125" role="img" aria-label="Illustrative market signal chart"><path className="chart-grid" d="M0 25H400 M0 65H400 M0 105H400"/><path className="chart-line" d="M0 110L24 99L43 107L67 71L90 86L114 65L139 81L165 48L190 60L215 29L237 49L262 39L290 53L315 20L345 33L372 8L400 18"/></svg><p>ENSEMBLE INFERENCE <span>ONNX</span></p></div>}</div><div className="project-copy"><p className="eyebrow">0{index + 1} / {project.category}</p><h3>{project.name}</h3><h4>{project.tagline}</h4><p>{project.detail}</p><Tags items={project.stack} /><p className="project-date">{project.date}</p></div></article>)}<a className="text-link" href="https://github.com/saurabhhumane125" target="_blank" rel="noopener noreferrer"><Github size={17} /> More experiments on GitHub <ArrowUpRight size={16} /></a></section>
+    <section className="content-section" id="about"><div className="section-heading"><div><p className="eyebrow">02 / THE PERSON BEHIND THE PIXELS</p><h2>Curiosity is<br />my <em>constant.</em></h2></div><p>Computer Engineering student.<br />Researcher. Visual storyteller.</p></div><div className="about-layout"><div className="about-intro"><p>I’m studying Computer Engineering at Pillai College of Engineering, University of Mumbai. I enjoy taking an idea through the details: the systems behind it, the experience of using it, and the story it tells.</p><div className="education-card"><p className="eyebrow">2023 — PRESENT</p><h3>B.Tech · Computer Engineering</h3><p>Pillai College of Engineering<br />University of Mumbai</p><div><strong>8.31</strong> CGPA</div></div></div><div className="experience-panel"><div className="experience-tabs" role="group" aria-label="Experience type">{['engineering', 'creative'].map(item => <button key={item} aria-pressed={tab === item} aria-controls="experience-content" onClick={() => setTab(item)}>{item === 'engineering' ? <Code2 size={16} /> : <Film size={16} />}{item}</button>)}</div><div id="experience-content" aria-live="polite">{tab === 'engineering' ? <><p className="eyebrow">JAN — MAR 2026 · REMOTE</p><h3>Research Intern</h3><h4>Suvidha Foundation</h4><p>Compared BART, PEGASUS, and LED for Indian English news summarization through literature review, experimentation, and reproducible research documentation.</p><Tags items={['Python', 'ROUGE', 'Google Colab', 'LaTeX']} /></> : <><p className="eyebrow">AUG 2025 — PRESENT</p><h3>Videography Head</h3><h4>Computer Society of India · PCE</h4><p>Leading videography and visual content production for technical events, from event coverage and promotional videos to post-production editing.</p><a className="text-link" href="#frames">Explore my frames <ArrowUpRight size={16} /></a></>}</div></div></div><div className="skills-grid">{skills.map(([title, detail]) => <div key={title}><p className="eyebrow">{title}</p><p>{detail}</p></div>)}</div><div className="certifications"><p className="eyebrow">CONTINUING TO LEARN</p><div><p>Google DeepMind: Train A Small Language Model <span>Google Skills · APR 2026</span></p><p>Transformer Models and BERT Model <span>Google Skills · APR 2026</span></p></div></div></section>
+    <section className="content-section" id="frames"><div className="section-heading"><div><p className="eyebrow">03 / OUTSIDE THE CODE</p><h2>A different kind<br />of <em>frame.</em></h2></div><a className="text-link" href="https://www.instagram.com/saurabh_frames_/" target="_blank" rel="noopener noreferrer">@saurabh_frames_ <ArrowUpRight size={17} /></a></div><div className="frames-grid">{gallery.map((item, index) => <a key={item.url} href={item.url} target="_blank" rel="noopener noreferrer"><img src={item.image} alt={`Saurabh’s cinematography, selected frame ${index + 1}`} loading="lazy" /><div><span>FRAME / 00{index + 1}</span><ArrowUpRight size={22} /></div></a>)}</div></section>
+    <section className="content-section contact-section" id="contact"><div className="contact-copy"><p className="eyebrow">04 / NEXT CHAPTER</p><h2>Have something<br />in <em>mind?</em></h2><p>A project, an opportunity, or a good conversation.<br />Let’s see what we can build together.</p><a className="email-link" href="mailto:saurabhhumane125@gmail.com">saurabhhumane125@gmail.com <ArrowUpRight size={18} /></a><div className="social-links"><a href="https://github.com/saurabhhumane125" target="_blank" rel="noopener noreferrer"><Github size={17} /> GitHub</a><a href="https://www.linkedin.com/in/saurabh-humane-77171a31b/" target="_blank" rel="noopener noreferrer"><Linkedin size={17} /> LinkedIn</a></div></div><form onSubmit={send} className="contact-form"><label htmlFor="name">Your name</label><input id="name" name="name" autoComplete="name" required maxLength={100} placeholder="What should I call you?" disabled={status === 'sending'} /><label htmlFor="email">Email address</label><input id="email" name="email" type="email" autoComplete="email" required maxLength={255} placeholder="you@example.com" disabled={status === 'sending'} /><label htmlFor="message">What are you thinking?</label><textarea id="message" name="message" required maxLength={1000} rows={3} placeholder="Tell me a little about it…" disabled={status === 'sending'} /><button className="primary-link" disabled={status === 'sending'} type="submit">{status === 'sending' ? 'Sending…' : 'Send message'} <ArrowUpRight size={17} /></button><p className="form-status" role="status">{status === 'success' ? 'Message sent. Thanks for reaching out!' : status === 'error' ? 'Could not send. Please use the email address alongside.' : status === 'invalid' ? 'Please complete all fields.' : ''}</p></form></section></main>
+    <footer className="site-footer"><a className="wordmark" href="#home" aria-label="Back to home">sh<i /></a><span>© {new Date().getFullYear()} Saurabh Humane</span><a href="#home">BACK TO TOP <ArrowUpRight size={14} /></a></footer><nav className="mobile-dock" aria-label="Mobile quick navigation">{nav.map((label, index) => { const Icon = [Code2, Fingerprint, Film, Mail][index]; return <a key={label} href={`#${label.toLowerCase()}`}><Icon size={18} />{label}</a>; })}</nav>
+  </div>;
+}
