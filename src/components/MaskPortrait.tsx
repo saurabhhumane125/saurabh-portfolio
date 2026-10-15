@@ -18,23 +18,29 @@ export default function MaskPortrait() {
     stage.current.style.setProperty('--reveal-x', `${x}px`);
     stage.current.style.setProperty('--reveal-y', `${y}px`);
     stage.current.style.setProperty('--reveal-radius', '96px');
+    stage.current.dataset.revealing = 'true';
   }
   function reset() {
     pointer.current.active = false;
-    if (!touchReveal) stage.current?.style.setProperty('--reveal-radius', '0px');
+    if (!touchReveal && stage.current) {
+      stage.current.style.setProperty('--reveal-radius', '0px');
+      stage.current.dataset.revealing = 'false';
+    }
   }
   useEffect(() => {
     if (!stage.current) return;
     stage.current.style.setProperty('--reveal-x', `${position}%`);
     stage.current.style.setProperty('--reveal-y', '43%');
     stage.current.style.setProperty('--reveal-radius', touchReveal ? '96px' : '0px');
+    stage.current.dataset.revealing = String(touchReveal);
   }, [touchReveal, position]);
 
   useEffect(() => {
     const element = canvas.current;
     const host = stage.current;
     const context = element?.getContext('2d');
-    if (!element || !host || !context || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!element || !host || !context) return;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let width = 0, height = 0, frame = 0, visible = false;
     const particles = Array.from({ length: 170 }, (_, i) => ({
       u: ((i * 73) % 173) / 173, v: ((i * 47) % 179) / 179,
@@ -48,7 +54,7 @@ export default function MaskPortrait() {
       particles.forEach(p => { p.x = p.u * width; p.y = p.v * height; });
     }
     function draw() {
-      if (!visible || document.hidden) { frame = 0; return; }
+      if (!visible || document.hidden || motion.matches) { frame = 0; return; }
       context!.clearRect(0, 0, width, height);
       const mouse = pointer.current;
       for (const p of particles) {
@@ -67,7 +73,11 @@ export default function MaskPortrait() {
       }
       frame = requestAnimationFrame(draw);
     }
-    const start = () => { if (visible && !document.hidden && !frame) frame = requestAnimationFrame(draw); };
+    const start = () => { if (visible && !document.hidden && !motion.matches && !frame) frame = requestAnimationFrame(draw); };
+    const changeMotion = () => {
+      if (motion.matches) { cancelAnimationFrame(frame); frame = 0; context.clearRect(0, 0, width, height); }
+      else start();
+    };
     const observer = new ResizeObserver(resize);
     observer.observe(host); resize();
     const intersection = new IntersectionObserver(entries => {
@@ -76,7 +86,8 @@ export default function MaskPortrait() {
     });
     intersection.observe(host);
     document.addEventListener('visibilitychange', start);
-    return () => { cancelAnimationFrame(frame); observer.disconnect(); intersection.disconnect(); document.removeEventListener('visibilitychange', start); };
+    motion.addEventListener('change', changeMotion);
+    return () => { cancelAnimationFrame(frame); observer.disconnect(); intersection.disconnect(); document.removeEventListener('visibilitychange', start); motion.removeEventListener('change', changeMotion); };
   }, []);
 
   return <div className="portrait-module">
@@ -84,6 +95,7 @@ export default function MaskPortrait() {
       <div className="identity-layer" role="img" aria-label="Saurabh Humane in a black T-shirt, revealed beneath a red web-pattern mask" />
       <div className="web-mask-layer" aria-hidden="true" />
       <canvas className="mask-particles" ref={canvas} aria-hidden="true" />
+      <div className="reveal-reticle" aria-hidden="true" />
       <div className="mask-corner corner-tl" /><div className="mask-corner corner-br" />
       <span className="mask-top-label">IDENTITY / 001</span><span className="mask-side-label">SAURABH HUMANE</span>
       <div className="mask-instruction"><ScanFace size={16} /><span className="pointer-instruction">MOVE TO REVEAL</span><span className="touch-instruction">TOUCH TO REVEAL</span><span className="live-dot" /></div>
